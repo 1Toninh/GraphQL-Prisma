@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model mesorregiao {
+  id           BigInt         @id
+  nome         String?        @db.VarChar(255)
+  uf_id        BigInt?
+  uf           uf?            @relation(fields: [uf_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk3c9f3cdua4ucsgu5t7oyiin1o")
+  microrregiao microrregiao[]
+}
+
+model microrregiao {
+  id             BigInt       @id
+  nome           String?      @db.VarChar(255)
+  mesorregiao_id BigInt?
+  mesorregiao    mesorregiao? @relation(fields: [mesorregiao_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkcukic4p1iey9wceigftxxwqff")
+  municipio      municipio[]
+}
+
+model municipio {
+  id                        BigInt                     @id
+  nome                      String?                    @db.VarChar(255)
+  microrregiao_id           BigInt?
+  microrregiao              microrregiao?              @relation(fields: [microrregiao_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fka9b99mod3ygs52aeh4eep3ko7")
+  municipios_municipio_list municipios_municipio_list?
+}
+
+model municipios {
+  id                        BigInt                      @id
+  municipios_municipio_list municipios_municipio_list[]
+}
+
+model municipios_municipio_list {
+  municipios_id     BigInt
+  municipio_list_id BigInt     @unique(map: "uk_tl07p5mmtcj5nr723kkvun7c6")
+  municipio         municipio  @relation(fields: [municipio_list_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkg5a16ama1j87wsjvc5tpmvsy2")
+  municipios        municipios @relation(fields: [municipios_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fksfjr6atdkwlxa9p4lcib0wl5b")
+}
+
+model regiao {
+  id    BigInt  @id
+  nome  String? @db.VarChar(255)
+  sigla String? @db.VarChar(255)
+  uf    uf[]
+}
+
+model uf {
+  id          BigInt        @id
+  nome        String?       @db.VarChar(255)
+  sigla       String?       @db.VarChar(255)
+  regiao_id   BigInt?
+  regiao      regiao?       @relation(fields: [regiao_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk39n80tlxcesygdmxuf6stxok7")
+  mesorregiao mesorregiao[]
+}
